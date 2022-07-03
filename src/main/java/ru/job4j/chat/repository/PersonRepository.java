@@ -6,4 +6,5 @@ import ru.job4j.chat.enity.Person;
 
 @Repository
 public interface PersonRepository extends CrudRepository<Person, Integer> {
+    Person findByUsername(String username);
 }

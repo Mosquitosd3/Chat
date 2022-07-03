@@ -7,6 +7,7 @@ insert into roles(name) values ('Admin'), ('Moderator'), ('User');
 create table persons(
     id serial primary key,
     username varchar(255) not null unique,
+    password varchar(255) not null,
     role_id int references roles(id)
 );
 insert into persons(username, role_id) values ('user-1', 1), ('user-2', 3), ('user-3', 3);

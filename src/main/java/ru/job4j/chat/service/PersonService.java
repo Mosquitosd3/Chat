@@ -26,6 +26,10 @@ public class PersonService {
         return persons;
     }
 
+    public Person findByName(String username) {
+        return personRepo.findByUsername(username);
+    }
+
     public Optional<Person> showById(int id) {
         return personRepo.findById(id);
     }
