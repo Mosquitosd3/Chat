@@ -3,6 +3,7 @@ package ru.job4j.chat.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.chat.enity.Message;
 import ru.job4j.chat.service.MessageService;
 
@@ -24,15 +25,24 @@ public class MessageControl {
 
     @GetMapping("/{id}")
     public ResponseEntity<Message> messageById(@PathVariable int id) {
+        if (id <= 0) {
+            throw new NullPointerException("Id cannot be negative or equally 0");
+        }
         var message = service.showById(id);
         return new ResponseEntity<Message>(
-                message.orElse(new Message()),
+                message.orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Message not found"
+                )),
                 message.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND
         );
     }
 
     @PostMapping("/")
     public ResponseEntity<Message> create(@RequestBody Message message) {
+        if (message.getMessage().isEmpty()) {
+            throw new NullPointerException("Еhe message cannot be empty");
+        }
         return new ResponseEntity<Message>(
                 this.service.save(message),
                 HttpStatus.CREATED
@@ -41,12 +51,18 @@ public class MessageControl {
 
     @PutMapping("/")
     public ResponseEntity<Void> update(@RequestBody Message message) {
+        if (message.getMessage().isEmpty()) {
+            throw new NullPointerException("Еhe message cannot be empty");
+        }
         this.service.save(message);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
+        if (id <= 0) {
+            throw new NullPointerException("Id cannot be negative or equally 0");
+        }
         this.service.delete(id);
         return ResponseEntity.ok().build();
     }
