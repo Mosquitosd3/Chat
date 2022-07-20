@@ -7,6 +7,7 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.chat.enity.Message;
 import ru.job4j.chat.service.MessageService;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @RestController
@@ -56,6 +57,19 @@ public class MessageControl {
         }
         this.service.save(message);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/")
+    public Message patch(@RequestBody Message message)
+            throws InvocationTargetException, IllegalAccessException {
+        var current = service.showById(message.getId())
+                .orElseThrow(
+                        () -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "massage not found"
+                        )
+                );
+        return service.patch(current, message);
     }
 
     @DeleteMapping("/{id}")

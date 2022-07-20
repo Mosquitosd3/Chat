@@ -9,6 +9,7 @@ import ru.job4j.chat.enity.Message;
 import ru.job4j.chat.enity.Room;
 import ru.job4j.chat.service.RoomService;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @RestController
@@ -69,6 +70,17 @@ public class RoomControl {
         }
         rest.put(API, message);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/")
+    public Room patch(@RequestBody Room room)
+            throws InvocationTargetException, IllegalAccessException {
+        var current = service.showByID(room.getId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Room not found")
+                );
+        return service.patch(current, room);
     }
 
     @DeleteMapping("/{id}")

@@ -9,6 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.chat.enity.Role;
 import ru.job4j.chat.service.RoleService;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @Controller
@@ -53,6 +54,19 @@ public class RoleControl {
                 this.service.save(role),
                 HttpStatus.CREATED
         );
+    }
+
+    @PatchMapping("/")
+    public Role patch(@RequestBody Role role)
+            throws InvocationTargetException, IllegalAccessException {
+        var current = service.showById(role.getId())
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Role not found"
+                        )
+                );
+        return service.patch(current, role);
     }
 
     @PutMapping("/")

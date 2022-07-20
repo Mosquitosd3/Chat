@@ -13,6 +13,7 @@ import ru.job4j.chat.service.PersonService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -83,6 +84,25 @@ public class PersonControl {
         }
         this.service.save(person);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/")
+    public Person patch(@RequestBody Person person)
+            throws InvocationTargetException, IllegalAccessException {
+        var current = service.showById(person.getId())
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Person not found")
+                );
+        if (person.getPassword().length() < 6) {
+            throw new IllegalArgumentException(
+                    "Invalid password. Password length must be more than 5 characters."
+            );
+        }
+        person.setPassword(encoder.encode(person.getPassword()));
+        if (person.getUsername().isEmpty() || person.getPassword().isEmpty()) {
+            throw new NullPointerException("Username and password mustn't be empty");
+        }
+       return service.patch(current, person);
     }
 
     @DeleteMapping("/{id}")
