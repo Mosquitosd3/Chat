@@ -2,13 +2,16 @@ package ru.job4j.chat.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.chat.enity.Message;
+import ru.job4j.chat.enity.Operation;
 import ru.job4j.chat.enity.Room;
 import ru.job4j.chat.service.RoomService;
 
+import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -73,7 +76,8 @@ public class RoomControl {
     }
 
     @PatchMapping("/")
-    public Room patch(@RequestBody Room room)
+    @Validated(Operation.OnUpdate.class)
+    public Room patch(@Valid @RequestBody Room room)
             throws InvocationTargetException, IllegalAccessException {
         var current = service.showByID(room.getId())
                 .orElseThrow(() -> new ResponseStatusException(

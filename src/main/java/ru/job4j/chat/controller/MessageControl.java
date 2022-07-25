@@ -2,11 +2,14 @@ package ru.job4j.chat.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.chat.enity.Message;
+import ru.job4j.chat.enity.Operation;
 import ru.job4j.chat.service.MessageService;
 
+import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -40,7 +43,8 @@ public class MessageControl {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Message> create(@RequestBody Message message) {
+    @Validated(Operation.OnCreate.class)
+    public ResponseEntity<Message> create(@Valid @RequestBody Message message) {
         if (message.getMessage().isEmpty()) {
             throw new NullPointerException("Еhe message cannot be empty");
         }
@@ -51,7 +55,8 @@ public class MessageControl {
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Message message) {
+    @Validated(Operation.OnUpdate.class)
+    public ResponseEntity<Void> update(@Valid @RequestBody Message message) {
         if (message.getMessage().isEmpty()) {
             throw new NullPointerException("Еhe message cannot be empty");
         }
@@ -60,7 +65,8 @@ public class MessageControl {
     }
 
     @PatchMapping("/")
-    public Message patch(@RequestBody Message message)
+    @Validated(Operation.OnUpdate.class)
+    public Message patch(@Valid @RequestBody Message message)
             throws InvocationTargetException, IllegalAccessException {
         var current = service.showById(message.getId())
                 .orElseThrow(

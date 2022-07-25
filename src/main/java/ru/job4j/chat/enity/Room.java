@@ -1,6 +1,8 @@
 package ru.job4j.chat.enity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.*;
 
 @Entity
@@ -8,7 +10,11 @@ import java.util.*;
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull(message = "Id must by non null", groups = {
+            Operation.OnUpdate.class, Operation.OnDelete.class
+    })
     private int id;
+    @NotBlank(message = "name room must be not empty", groups = Operation.OnCreate.class)
     private String name;
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private Set<Message> messages = new HashSet<>();

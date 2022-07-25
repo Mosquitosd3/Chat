@@ -4,11 +4,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.job4j.chat.enity.Operation;
 import ru.job4j.chat.enity.Role;
 import ru.job4j.chat.service.RoleService;
 
+import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -46,7 +49,8 @@ public class RoleControl {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Role> create(@RequestBody Role role) {
+    @Validated(Operation.OnCreate.class)
+    public ResponseEntity<Role> create(@Valid @RequestBody Role role) {
         if (role.getName().isEmpty()) {
             throw new NullPointerException("role mustn't be empty");
         }
@@ -57,7 +61,8 @@ public class RoleControl {
     }
 
     @PatchMapping("/")
-    public Role patch(@RequestBody Role role)
+    @Validated(Operation.OnUpdate.class)
+    public Role patch(@Valid @RequestBody Role role)
             throws InvocationTargetException, IllegalAccessException {
         var current = service.showById(role.getId())
                 .orElseThrow(() ->
@@ -70,7 +75,8 @@ public class RoleControl {
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Role role) {
+    @Validated(Operation.OnUpdate.class)
+    public ResponseEntity<Void> update(@Valid @RequestBody Role role) {
         if (role.getName().isEmpty()) {
             throw new NullPointerException("role mustn't be empty");
         }

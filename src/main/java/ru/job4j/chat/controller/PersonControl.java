@@ -6,12 +6,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import ru.job4j.chat.enity.Operation;
 import ru.job4j.chat.enity.Person;
 import ru.job4j.chat.service.PersonService;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -56,7 +59,8 @@ public class PersonControl {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<Person> create(@RequestBody Person person) {
+    @Validated(Operation.OnCreate.class)
+    public ResponseEntity<Person> create(@Valid @RequestBody Person person) {
         if (person.getUsername().isEmpty() || person.getPassword().isEmpty()) {
             throw new NullPointerException("Username and password mustn't be empty");
         }
@@ -73,7 +77,8 @@ public class PersonControl {
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Person person) {
+    @Validated(Operation.OnUpdate.class)
+    public ResponseEntity<Void> update(@Valid @RequestBody Person person) {
         if (person.getUsername().isEmpty() || person.getPassword().isEmpty()) {
             throw new NullPointerException("Username and password mustn't be empty");
         }
@@ -87,7 +92,8 @@ public class PersonControl {
     }
 
     @PatchMapping("/")
-    public Person patch(@RequestBody Person person)
+    @Validated(Operation.OnUpdate.class)
+    public Person patch(@Valid @RequestBody Person person)
             throws InvocationTargetException, IllegalAccessException {
         var current = service.showById(person.getId())
                 .orElseThrow(
